@@ -1,79 +1,691 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kredi Hesaplama - Kredihesap.net</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KrediHesap.net | Kredi Hesaplama</title>
+  <meta name="description" content="Kredi tutarı, faiz oranı ve vadeye göre aylık taksit, toplam ödeme ve toplam faiz yükünü kolayca hesaplayın.">
+  <style>
+    :root {
+      --bg: #0b1120;
+      --bg-soft: #111a2e;
+      --surface: #151f36;
+      --surface-2: #1b2742;
+      --text: #edf3ff;
+      --muted: #99a8c5;
+      --line: rgba(255,255,255,0.08);
+      --primary: #34c6d8;
+      --primary-hover: #28b6c7;
+      --success: #37d39a;
+      --danger: #ff6464;
+      --shadow: 0 20px 60px rgba(0,0,0,0.28);
+      --hero-glow-1: rgba(52,198,216,0.12);
+      --hero-glow-2: rgba(55,211,154,0.10);
+    }
 
-<style>
-body {
-  font-family: Arial;
-  background: #f5f5f5;
-  text-align: center;
-  padding: 20px;
-}
+    body.light {
+      --bg: #eef3f9;
+      --bg-soft: #f8fbff;
+      --surface: #ffffff;
+      --surface-2: #f4f7fc;
+      --text: #162033;
+      --muted: #64748b;
+      --line: rgba(15,23,42,0.08);
+      --primary: #178ba2;
+      --primary-hover: #12778c;
+      --success: #1fa56f;
+      --danger: #d94d4d;
+      --shadow: 0 18px 48px rgba(15,23,42,0.10);
+      --hero-glow-1: rgba(23,139,162,0.08);
+      --hero-glow-2: rgba(31,165,111,0.06);
+    }
 
-.container {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 400px;
-  margin: auto;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-input {
-  width: 90%;
-  padding: 10px;
-  margin: 10px;
-}
+    html {
+      scroll-behavior: smooth;
+    }
 
-button {
-  padding: 10px 20px;
-  background: green;
-  color: white;
-  border: none;
-}
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, var(--hero-glow-1), transparent 28%),
+        radial-gradient(circle at top right, var(--hero-glow-2), transparent 20%),
+        var(--bg);
+      transition: background .25s ease, color .25s ease;
+    }
 
-.result {
-  margin-top: 15px;
-  font-weight: bold;
-}
-</style>
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
+    .container {
+      width: min(1140px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+      background: rgba(11,17,32,0.72);
+      border-bottom: 1px solid var(--line);
+    }
+
+    body.light .topbar {
+      background: rgba(255,255,255,0.74);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 78px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-title {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      line-height: 1.05;
+    }
+
+    .brand-subtitle {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .theme-toggle {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      padding: 11px 15px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: .2s ease;
+      white-space: nowrap;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      background: var(--surface-2);
+    }
+
+    .hero {
+      padding: 54px 0 24px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--surface), var(--surface-2));
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      gap: 8px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(52,198,216,0.18);
+      background: rgba(52,198,216,0.11);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .hero-copy h1 {
+      margin: 0 0 14px;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -1.2px;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      max-width: 630px;
+      font-size: 17px;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+
+    .hero-points {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .hero-point {
+      padding: 11px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    body.light .hero-point {
+      background: rgba(0,0,0,0.02);
+    }
+
+    .calculator-card {
+      padding: 28px;
+    }
+
+    .section-eyebrow {
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      margin: 0 0 6px;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .card-subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 15px;
+      padding: 15px 16px;
+      font-size: 16px;
+      outline: none;
+      transition: .2s ease;
+    }
+
+    body.light .field input {
+      background: #fff;
+    }
+
+    .field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(52,198,216,0.12);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 15px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #07131d;
+      min-width: 150px;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+      min-width: 210px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.04);
+      transform: translateY(-1px);
+    }
+
+    body.light .btn-secondary:hover {
+      background: rgba(0,0,0,0.03);
+    }
+
+    .result-box {
+      margin-top: 22px;
+      display: none;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      padding: 18px;
+    }
+
+    body.light .result-box {
+      background: rgba(0,0,0,0.02);
+    }
+
+    .result-box.show {
+      display: block;
+    }
+
+    .result-title {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .result-item {
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      padding: 15px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    body.light .result-item {
+      background: rgba(255,255,255,0.7);
+    }
+
+    .result-label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .result-value {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    .info-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .section {
+      padding: 26px 0 66px;
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    .section-desc {
+      margin: 0 0 26px;
+      max-width: 720px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .bank-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .bank-item {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--surface), var(--surface-2));
+      border-radius: 18px;
+      padding: 16px 14px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .trust-card {
+      background: linear-gradient(180deg, var(--surface), var(--surface-2));
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .trust-card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .trust-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .footer {
+      padding: 12px 0 46px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .trust-grid,
+      .result-grid,
+      .bank-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .calculator-card {
+        padding: 24px;
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .topbar-inner {
+        min-height: 72px;
+      }
+
+      .brand-subtitle {
+        display: none;
+      }
+
+      .brand-title {
+        font-size: 20px;
+      }
+
+      .card-title {
+        font-size: 24px;
+      }
+
+      .section-title {
+        font-size: 26px;
+      }
+
+      .actions .btn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="#" class="brand">
+        <img src="logo.png" alt="KrediHesap logo" class="brand-logo">
+        <div class="brand-text">
+          <span class="brand-title">KrediHesap</span>
+          <span class="brand-subtitle">Sade kredi hesaplama ve karar desteği</span>
+        </div>
+      </a>
 
-<h1>Kredi Hesaplama</h1>
+      <button class="theme-toggle" id="themeToggle">🌙 Koyu Mod</button>
+    </div>
+  </header>
 
-<div class="container">
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="card hero-copy">
+          <div class="badge">Hızlı • Sade • Güven veren</div>
+          <h1>Kredi hesabını<br>tek ekranda gör.</h1>
+          <p>
+            Kredi tutarı, aylık faiz oranı ve vade bilgisine göre aylık taksit,
+            toplam geri ödeme ve toplam faiz yükünü birkaç saniyede öğren.
+          </p>
 
-<input type="number" id="amount" placeholder="Kredi Tutarı (TL)">
-<input type="number" id="rate" placeholder="Faiz (%)">
-<input type="number" id="months" placeholder="Vade (Ay)">
+          <div class="hero-points">
+            <div class="hero-point">Aylık ödeme görünümü</div>
+            <div class="hero-point">Toplam geri ödeme</div>
+            <div class="hero-point">Koyu / açık tema desteği</div>
+          </div>
+        </div>
 
-<button onclick="calculate()">Hesapla</button>
-<br><br>
-<a href="https://www.google.com/search?q=kredi+başvur" target="_blank">
-  <button style="background:red;color:white;padding:15px 25px;border:none;font-size:18px;cursor:pointer;">
-    Hemen Kredi Başvur
-  </button>
-</a>
-<div class="result" id="result"></div>
+        <div class="card calculator-card">
+          <div class="section-eyebrow">Kredi aracı</div>
+          <h2 class="card-title">Kredi Hesaplama</h2>
+          <p class="card-subtitle">
+            Aşağıdaki alanları doldurun. Sonuçlar tahmini olarak anında gösterilir.
+          </p>
 
-</div>
+          <div class="field">
+            <label for="amount">Kredi Tutarı (TL)</label>
+            <input type="number" id="amount" placeholder="Örn: 100000">
+          </div>
 
-<script>
-function calculate() {
-  let amount = document.getElementById("amount").value;
-  let rate = document.getElementById("rate").value / 100 / 12;
-  let months = document.getElementById("months").value;
+          <div class="field">
+            <label for="rate">Aylık Faiz Oranı (%)</label>
+            <input type="number" id="rate" step="0.01" placeholder="Örn: 3.49">
+          </div>
 
-  let payment = amount * rate / (1 - Math.pow(1 + rate, -months));
-  document.getElementById("result").innerText =
-    "Aylık Ödeme: " + payment.toFixed(2) + " TL";
-}
-</script>
+          <div class="field">
+            <label for="months">Vade (Ay)</label>
+            <input type="number" id="months" placeholder="Örn: 12">
+          </div>
 
+          <div class="actions">
+            <button class="btn btn-primary" onclick="calculateLoan()">Hesapla</button>
+            <a class="btn btn-secondary" href="https://www.google.com/search?q=ihtiya%C3%A7+kredisi" target="_blank" rel="noopener noreferrer">
+              Kredi Seçeneklerini Gör
+            </a>
+          </div>
+
+          <div class="result-box" id="resultBox">
+            <div class="result-title">Tahmini sonuçlar</div>
+
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Aylık Taksit</span>
+                <div class="result-value" id="monthlyPayment">-</div>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Toplam Geri Ödeme</span>
+                <div class="result-value" id="totalPayment">-</div>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Toplam Faiz Yükü</span>
+                <div class="result-value" id="totalInterest">-</div>
+              </div>
+            </div>
+
+            <div class="info-note">
+              Bu hesaplama tahmini sonuç verir. Kesin ödeme planı, tahsis ücreti ve güncel faiz oranları bankaya göre değişebilir.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Popüler bankalar ve güven hissi</h2>
+        <p class="section-desc">
+          Kullanıcıya güven vermek için sade bir yapı tercih ediyoruz. Aşağıdaki alan şimdilik görsel güven katmanı olarak yer alır; daha sonra gerçek karşılaştırma ve yönlendirme sistemiyle genişletilebilir.
+        </p>
+
+        <div class="bank-grid">
+          <div class="bank-item">Akbank</div>
+          <div class="bank-item">Yapı Kredi</div>
+          <div class="bank-item">İş Bankası</div>
+          <div class="bank-item">Garanti BBVA</div>
+          <div class="bank-item">QNB</div>
+        </div>
+
+        <div class="trust-grid">
+          <div class="trust-card">
+            <h3>Sade arayüz</h3>
+            <p>
+              Karmaşık kutular ve dikkat dağıtan bloklar yerine, tek ekranda net bilgi sunar.
+            </p>
+          </div>
+
+          <div class="trust-card">
+            <h3>Hızlı sonuç</h3>
+            <p>
+              Tutar, faiz ve vade bilgisiyle saniyeler içinde tahmini ödeme planını oluşturur.
+            </p>
+          </div>
+
+          <div class="trust-card">
+            <h3>Güven veren görünüm</h3>
+            <p>
+              Koyu tema, temiz kart yapısı ve dengeli boşluklar sayesinde gözü yormaz, profesyonel görünür.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    © 2026 KrediHesap.net — Tüm hakları saklıdır.
+  </footer>
+
+  <script>
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('tr-TR', {
+        style: 'currency',
+        currency: 'TRY',
+        maximumFractionDigits: 2
+      }).format(value);
+    }
+
+    function calculateLoan() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const monthlyRate = parseFloat(document.getElementById('rate').value) / 100;
+      const months = parseInt(document.getElementById('months').value, 10);
+
+      if (!amount || !monthlyRate || !months || amount <= 0 || monthlyRate <= 0 || months <= 0) {
+        alert('Lütfen geçerli kredi tutarı, faiz oranı ve vade bilgisi girin.');
+        return;
+      }
+
+      const payment =
+        (amount * monthlyRate * Math.pow(1 + monthlyRate, months)) /
+        (Math.pow(1 + monthlyRate, months) - 1);
+
+      const totalPayment = payment * months;
+      const totalInterest = totalPayment - amount;
+
+      document.getElementById('monthlyPayment').textContent = formatCurrency(payment);
+      document.getElementById('totalPayment').textContent = formatCurrency(totalPayment);
+      document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
+      document.getElementById('resultBox').classList.add('show');
+    }
+
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('theme');
+
+    if (savedTheme === 'light') {
+      document.body.classList.add('light');
+      themeToggle.textContent = '☀️ Açık Mod';
+    } else {
+      themeToggle.textContent = '🌙 Koyu Mod';
+    }
+
+    themeToggle.addEventListener('click', function () {
+      document.body.classList.toggle('light');
+
+      if (document.body.classList.contains('light')) {
+        localStorage.setItem('theme', 'light');
+        themeToggle.textContent = '☀️ Açık Mod';
+      } else {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.textContent = '🌙 Koyu Mod';
+      }
+    });
+  </script>
 </body>
 </html>
